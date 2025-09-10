@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
-export default function SchoolCatalog() {
+function SchoolCatalog() {
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState("");
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     fetch("/api/courses.json")
@@ -44,6 +45,13 @@ export default function SchoolCatalog() {
     return 0;
   });
 
+  const rowsPerPage = 5;
+  const totalPages = Math.ceil(sortedCourses.length / rowsPerPage);
+  const pagedCourses = sortedCourses.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   // Helper to show sort arrow
   const renderSortArrow = (column) => {
     if (sortColumn !== column) return null;
@@ -81,8 +89,8 @@ export default function SchoolCatalog() {
           </tr>
         </thead>
         <tbody>
-          {sortedCourses.map((course, idx) => (
-            <tr key={idx}>
+          {pagedCourses.map((course, idx) => (
+            <tr key={idx + page * rowsPerPage}>
               <td>{course.trimester}</td>
               <td>{course.courseNumber}</td>
               <td>{course.courseName}</td>
@@ -96,9 +104,18 @@ export default function SchoolCatalog() {
         </tbody>
       </table>
       <div className="pagination">
-        <button>Previous</button>
-        <button>Next</button>
+        <button onClick={() => setPage(page - 1)} disabled={page === 0}>
+          Previous
+        </button>
+        <button
+          onClick={() => setPage(page + 1)}
+          disabled={page >= totalPages - 1}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
 }
+
+export default SchoolCatalog;
