@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { EnrolledCoursesContext } from "./App";
 
 function SchoolCatalog() {
+  const { addEnrolledCourse } = useContext(EnrolledCoursesContext);
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState("");
   const [sortColumn, setSortColumn] = useState(null);
@@ -97,7 +99,9 @@ function SchoolCatalog() {
               <td>{course.semesterCredits}</td>
               <td>{course.totalClockHours}</td>
               <td>
-                <button>Enroll</button>
+                <button onClick={() => addEnrolledCourse(course)}>
+                  Enroll
+                </button>
               </td>
             </tr>
           ))}
